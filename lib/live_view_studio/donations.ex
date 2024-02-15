@@ -35,6 +35,10 @@ defmodule LiveViewStudio.Donations do
     |> Repo.all()
   end
 
+  def donation_count do
+    Repo.aggregate(Donation, :count)
+  end
+
   defp sort(query, %{sort_by: sort_by, sort_order: sort_order}) do
     order_by(query, {^sort_order, ^sort_by})
   end
