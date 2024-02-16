@@ -14,6 +14,19 @@ defmodule LiveViewStudioWeb.BoatsLive do
     {:ok, socket, temporary_assigns: [boats: []]}
   end
 
+  def handle_params(params, _uri, socket) do
+    type = params["type"] || ""
+    prices = params["prices"] || []
+
+    filter =
+      %{
+        type: type,
+        prices: prices
+      }
+
+    {:noreply, assign(socket, filter: filter, boats: Boats.list_boats(filter))}
+  end
+
   def render(assigns) do
     ~H"""
     <h1>Daily Boat Rentals</h1>
@@ -94,9 +107,7 @@ defmodule LiveViewStudioWeb.BoatsLive do
   def handle_event("filter", %{"type" => type, "prices" => prices}, socket) do
     filter = %{type: type, prices: prices}
 
-    boats = Boats.list_boats(filter)
-
-    {:noreply, assign(socket, boats: boats, filter: filter)}
+    {:noreply, push_patch(socket, to: ~p"/boats?#{filter}")}
   end
 
   defp type_options do
